@@ -131,7 +131,7 @@ To make it actually send emails, choose one:
 | Phone 1 | +91-8948-268-809 |
 | Phone 2 | +91-8318-596-409 |
 | Email | utk.adv2103@gmail.com |
-| Office | 80, Second Floor, Golf Links, New Delhi – 110 003 |
+| Office | A446 (LGF), Defence Colony, New Delhi – 110 024 |
 | Education | RMLNLU Lucknow, B.A. LL.B (Hons.) 2021 |
 
 ---

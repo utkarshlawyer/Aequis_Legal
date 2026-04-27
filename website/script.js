@@ -201,6 +201,7 @@
   const form      = document.getElementById('contactForm');
   const submitBtn = document.getElementById('cfSubmit');
   const success   = document.getElementById('cfSuccess');
+  const error     = document.getElementById('cfError');
 
   if (form) {
     form.addEventListener('submit', function (e) {
@@ -210,42 +211,47 @@
         submitBtn.textContent = 'Sending…';
         submitBtn.disabled = true;
       }
+      if (error) error.style.display = 'none';
 
-      // Build mailto: with form data so it opens the client's email app
-      const name    = (form.elements['name']    || {}).value || '';
-      const phone   = (form.elements['phone']   || {}).value || '';
-      const email   = (form.elements['email']   || {}).value || '';
-      const matter  = (form.elements['matter']  || {}).value || '';
-      const message = (form.elements['message'] || {}).value || '';
+      const data = new FormData(form);
 
-      const subject = 'Legal Enquiry from ' + name + ' — ' + matter;
-      const body    = 'Name: ' + name +
-                      '\nPhone: ' + phone +
-                      '\nEmail: ' + email +
-                      '\nNature of Matter: ' + matter +
-                      '\n\nMessage:\n' + message;
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: data
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+          if (json.success) {
+            if (submitBtn) submitBtn.style.display = 'none';
+            if (success)   success.style.display   = 'block';
+            form.reset();
 
-      window.location.href = 'mailto:utkarsh@aequislegal.com'
-        + '?subject=' + encodeURIComponent(subject)
-        + '&body='    + encodeURIComponent(body);
-
-      setTimeout(function () {
-        if (submitBtn) submitBtn.style.display = 'none';
-        if (success)   success.style.display   = 'block';
-        form.reset();
-
-        // GA4 / gtag event
-        if (typeof gtag === 'function') {
-          gtag('event', 'generate_lead', {
-            event_category: 'Contact',
-            event_label:    'Aequis Legal Form Submit'
-          });
-        }
-        // Meta Pixel
-        if (typeof fbq === 'function') {
-          fbq('track', 'Lead');
-        }
-      }, 800);
+            // GA4
+            if (typeof gtag === 'function') {
+              gtag('event', 'generate_lead', {
+                event_category: 'Contact',
+                event_label:    'Aequis Legal Form Submit'
+              });
+            }
+            // Meta Pixel
+            if (typeof fbq === 'function') {
+              fbq('track', 'Lead');
+            }
+          } else {
+            if (submitBtn) {
+              submitBtn.textContent = 'Send Message →';
+              submitBtn.disabled = false;
+            }
+            if (error) error.style.display = 'block';
+          }
+        })
+        .catch(function () {
+          if (submitBtn) {
+            submitBtn.textContent = 'Send Message →';
+            submitBtn.disabled = false;
+          }
+          if (error) error.style.display = 'block';
+        });
     });
   }
 
